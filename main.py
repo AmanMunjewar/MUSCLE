@@ -16,11 +16,7 @@ from losses.losses import get_loss
 from networks.net_factory_cls import net_factory
 from utils import calculate_binary_classification_metric, save_result_to_csv, calculate_multi_classification_metric
 
-from datasets.CheXpert.CheXpert_dataset import CheXpert_Dataset
-from datasets.APTOS.APTOS_dataset import APTOS_DataSets
-from datasets.Chaoyang.Chaoyang_dataset import Chaoyang_DataSets
-from datasets.ISIC_2018_Task_3.ISIC_2018_Task_3_dataset import ISIC2018Task3_DataSets
-from datasets.Kvasir.KvasirV2_dataset import KvasirV2_DataSets
+from datasets.HAM10000.HAM10000_dataset import HAM10000_DataSets
 
 
 evidences_model_list = ['ResNet_CHW_SAFS_TMSL', 'VanillaNet_CHW_SAFS_TMSL', 'SwinTransformer_CHW_SAFS_TMSL']
@@ -33,13 +29,8 @@ def parse_option():
     """
     parser = argparse.ArgumentParser()
     # dataset
-    parser.add_argument('--dataset', type=str, default='CheXpert',
-                        choices=['ISIC_2018_Task_3',
-                                 'APTOS',
-                                 'CheXpert', 
-                                 'KvasirV2',
-                                 'Chaoyang',
-                                 ],
+    parser.add_argument('--dataset', type=str, default='HAM10000',
+                        choices=['HAM10000'],
                         help='dataset name')
     parser.add_argument('--CheXpert_type', type=str, default='Edema',
                         help='CheXpert type')
@@ -114,56 +105,16 @@ def set_loader(args):
     patch_size = args.patch_size
     batch_size = args.batch_size
 
-    if dataset == 'ISIC_2018_Task_3':
+    if dataset == 'HAM10000':
         # set dataset info
         args.has_val_set = True
         args.in_channels = 3
         args.images_normalized = False
         args.num_classes = 7
 
-        train_dataset = ISIC2018Task3_DataSets(split='train', img_size=patch_size)
-        val_dataset = ISIC2018Task3_DataSets(split='val', img_size=patch_size)
-        test_dataset = ISIC2018Task3_DataSets(split='test', img_size=patch_size)
-    elif dataset == 'APTOS':
-        # set dataset info
-        args.has_val_set = True
-        args.in_channels = 3
-        args.images_normalized = False
-        args.num_classes = 5
-
-        train_dataset = APTOS_DataSets(split='train', img_size=patch_size)
-        val_dataset = APTOS_DataSets(split='val', img_size=patch_size)
-        test_dataset = APTOS_DataSets(split='test', img_size=patch_size)
-    elif dataset == 'KvasirV2':
-        # set dataset info
-        args.has_val_set = True
-        args.in_channels = 3
-        args.images_normalized = False
-        args.num_classes = 8
-
-        train_dataset = KvasirV2_DataSets(split='train', img_size=patch_size)
-        val_dataset = KvasirV2_DataSets(split='val', img_size=patch_size)
-        test_dataset = KvasirV2_DataSets(split='test', img_size=patch_size)
-    elif dataset == 'Chaoyang':
-        # set dataset info
-        args.has_val_set = True
-        args.in_channels = 3
-        args.images_normalized = False
-        args.num_classes = 4
-
-        train_dataset = Chaoyang_DataSets(split='train', img_size=patch_size)
-        val_dataset = Chaoyang_DataSets(split='val', img_size=patch_size)
-        test_dataset = Chaoyang_DataSets(split='test', img_size=patch_size)
-    elif dataset == 'CheXpert':
-        # set dataset info
-        args.has_val_set = True
-        args.in_channels = 3
-        args.images_normalized = False
-        args.num_classes = 2
-
-        train_dataset = CheXpert_Dataset(split='train', type_name=args.CheXpert_type, image_size=patch_size)
-        val_dataset = CheXpert_Dataset(split='val', type_name=args.CheXpert_type, image_size=patch_size)
-        test_dataset = CheXpert_Dataset(split='test', type_name=args.CheXpert_type, image_size=patch_size)
+        train_dataset = HAM10000_DataSets(split='train', img_size=patch_size)
+        val_dataset = HAM10000_DataSets(split='val', img_size=patch_size)
+        test_dataset = HAM10000_DataSets(split='test', img_size=patch_size)
     else:
         raise ValueError(batch_size)
 
@@ -351,7 +302,7 @@ def main():
         pretrained_str = '_pretrained2'
     else:
         pretrained_str = ''
-    
+
     base_lr_ = str(args.base_lr).split('.')[-1]
     args.snapshot_path = f'../save_dir/{args.dataset}/{args.model}_{args.model_deep}{pretrained_str}/{args.exp_name}_{args.patch_size[0]}x{args.patch_size[1]}_{args.batch_size}bs_{args.epochs}eps_{base_lr_}lr'
     if not os.path.exists(args.snapshot_path):
