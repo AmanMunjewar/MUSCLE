@@ -8,7 +8,7 @@ from datasets.HAM10000.augmentation import train_transform, val_transform, cente
 
 os.environ['NO_ALBUMENTATIONS_UPDATE'] = '1'
 
-base_dir = r'/home/datasets/HAM10000'
+base_dir = r'D:\Python\database\HAM10000'
 
 class HAM10000_DataSets(Dataset):
     def __init__(
