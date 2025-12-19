@@ -40,14 +40,14 @@ def center_crop(img, crop_size=None):
 def train_transform(p=1, img_size=(256, 256)):
     train_compose = A.Compose(
         [
-            A.Resize(img_size[0], img_size[1], always_apply=True),
+            A.Resize(height=img_size[0], width=img_size[1], p=1),
             # Spatial-level transforms
             A.OneOf([
                 A.HorizontalFlip(p=0.2),
                 A.VerticalFlip(p=0.2),
                 A.RandomRotate90(p=0.2),
                 A.Transpose(p=0.2),
-                A.RandomResizedCrop(height=img_size[1], width=img_size[0], scale=(0.8, 1.0), ratio=(0.8, 1.0), p=0.2),
+                A.RandomResizedCrop(size=img_size, scale=(0.8, 1.0), ratio=(0.8, 1.0), p=0.2),
             ], p=0.8),
             # Pixel-level transforms
             A.OneOf([
@@ -59,7 +59,7 @@ def train_transform(p=1, img_size=(256, 256)):
                 A.CoarseDropout(num_holes_range=(1, 5), hole_width_range=(5,20), hole_height_range=(5,20), p=0.2),
             ], p=0.8),
             # A.Normalize(mean=mean, std=std, always_apply=True),
-            ToTensorV2(always_apply=True),  # apply `ToTensorV2` that converts a NumPy array to a PyTorch tensor
+            ToTensorV2(p=1),  # apply `ToTensorV2` that converts a NumPy array to a PyTorch tensor
         ], p=p
     )
     return train_compose
@@ -68,9 +68,9 @@ def train_transform(p=1, img_size=(256, 256)):
 def val_transform(p=1, img_size=(256, 256)):
     val_compose = A.Compose(
         [
-            A.Resize(img_size[0], img_size[1], always_apply=True),
+            A.Resize(height=img_size[0], width=img_size[1], p=1),
             # A.Normalize(mean=mean, std=std, always_apply=True),
-            ToTensorV2(always_apply=True),  # apply `ToTensorV2` that converts a NumPy array to a PyTorch tensor
+            ToTensorV2(p=1),  # apply `ToTensorV2` that converts a NumPy array to a PyTorch tensor
         ], p=p
     )
     return val_compose
